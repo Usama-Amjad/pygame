@@ -32,6 +32,11 @@ jump_strength = -15
 # Screen fps property
 clock = pygame.time.Clock()
 
+def keep_character_in_bounds():
+    global character_pos
+    character_pos[0] = max(character_size, min(character_pos[0], width - character_size))
+    character_pos[1] = max(character_size, min(character_pos[1], height - character_size))
+    
 # Function to process commands
 def process_command(command):
     global character_pos, character_color, is_jumping, jump_velocity
@@ -48,9 +53,6 @@ def process_command(command):
                     character_pos[1] -= 64.45
                 elif child.text == "down":
                     character_pos[1] += 64.45
-                elif child.text == "right":
-                    character_pos[0] += 64.45
-                    character_pos[1] -= 64.45
         elif token.text == "jump" and not is_jumping:
             is_jumping = True
             jump_velocity = jump_strength
@@ -62,7 +64,6 @@ def process_command(command):
                                        random.randint(0, 255))
 
 def main():
-    # Main game loop
     running = True
     input_text = ""
     font = pygame.font.Font(None, 40)
@@ -91,11 +92,14 @@ def main():
                 character_pos[1] = 480
                 is_jumping = False
                 jump_velocity = 0
+        
+        # Keep character in bounds
+        keep_character_in_bounds()
 
         # Background image
         screen.blit(backimage,(0, 0))
         
-        # Draw the character
+        # Character
         pygame.draw.circle(screen, character_color, character_pos, character_size)
         
         # Draw the input text
